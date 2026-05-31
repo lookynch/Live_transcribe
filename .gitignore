@@ -1,0 +1,31 @@
+# Build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+publish/
+/Releases/
+*.user
+
+# Velopack / packaging artifacts (releases live in GitHub Releases, never in the repo)
+*.nupkg
+*-Setup.exe
+*-Portable.zip
+releases*.json
+RELEASES
+
+# Code-signing certificates — NEVER commit these
+*.pfx
+*.snk
+*.p12
+
+# Local secrets / keys
+*.key
+appsettings.*.local.json
+
+# IDE / OS
+.vs/
+.idea/
+*.suo
+Thumbs.db
+.DS_Store

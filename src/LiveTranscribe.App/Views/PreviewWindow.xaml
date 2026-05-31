@@ -1,0 +1,33 @@
+<Window x:Class="LiveTranscribe.App.Views.PreviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Vorschau — Live Transcribe"
+        Width="560" Height="460" WindowStartupLocation="CenterScreen"
+        Background="{StaticResource SurfaceBrush}" ShowInTaskbar="True">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Rohtext (lokal transkribiert)" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,4" />
+        <TextBox Grid.Row="1" Text="{Binding RawText, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True"
+                 TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+
+        <TextBlock Grid.Row="2" Text="Optimierter Text" Foreground="{StaticResource MutedBrush}" Margin="0,12,0,4"
+                   Visibility="{Binding HasOptimization, Converter={StaticResource BoolToVisibility}}" />
+        <TextBox Grid.Row="3" Text="{Binding FinalText, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True"
+                 TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
+                 Visibility="{Binding HasOptimization, Converter={StaticResource BoolToVisibility}}" />
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Content="Verwerfen" Width="100" Margin="0,0,8,0" Command="{Binding DiscardCommand}" />
+            <Button Content="Kopieren" Width="100" Margin="0,0,8,0" Command="{Binding CopyCommand}" />
+            <Button Content="Einfügen" Width="100" Command="{Binding InsertCommand}"
+                    Background="{StaticResource AccentBrush}" Foreground="White" />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,88 @@
+name: Release
+
+# Baut, testet und veröffentlicht ein Velopack-Release, sobald ein Tag v* gepusht wird.
+# Die App aktualisiert sich ausschließlich aus diesen fertigen Release-Artefakten —
+# niemals aus dem Quellcode oder einem Branch-Build.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout (mit voller Historie für Changelog)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: .NET 8 einrichten
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Version aus Tag ableiten
+        id: ver
+        shell: pwsh
+        run: |
+          $ver = "${{ github.ref_name }}" -replace '^v',''
+          "version=$ver" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          $pre = if ($ver -match '-') { 'true' } else { 'false' }
+          "prerelease=$pre" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Host "Release-Version: $ver (prerelease=$pre)"
+
+      - name: Tests
+        run: dotnet test src/LiveTranscribe.Tests/LiveTranscribe.Tests.csproj -c Release --nologo
+
+      - name: Publish
+        run: >
+          dotnet publish src/LiveTranscribe.App/LiveTranscribe.App.csproj
+          -c Release -r win-x64 --self-contained false
+          -p:Version=${{ steps.ver.outputs.version }}
+          -o publish
+
+      - name: vpk installieren
+        run: dotnet tool install -g vpk
+
+      - name: Vorherige Releases laden (für Delta-Updates)
+        continue-on-error: true
+        run: >
+          vpk download github
+          --repoUrl ${{ github.server_url }}/${{ github.repository }}
+          --token ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Velopack-Paket erstellen
+        run: >
+          vpk pack
+          --packId LiveTranscribe
+          --packVersion ${{ steps.ver.outputs.version }}
+          --packDir publish
+          --mainExe LiveTranscribe.exe
+          --icon build/app.ico
+          --releaseNotes build/notes.md
+          --channel win
+
+      - name: Release veröffentlichen (stabil)
+        if: steps.ver.outputs.prerelease == 'false'
+        run: >
+          vpk upload github
+          --repoUrl ${{ github.server_url }}/${{ github.repository }}
+          --publish
+          --releaseName "Live Transcribe ${{ steps.ver.outputs.version }}"
+          --tag ${{ github.ref_name }}
+          --token ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release veröffentlichen (Pre-Release)
+        if: steps.ver.outputs.prerelease == 'true'
+        run: >
+          vpk upload github
+          --repoUrl ${{ github.server_url }}/${{ github.repository }}
+          --publish --pre
+          --releaseName "Live Transcribe ${{ steps.ver.outputs.version }}"
+          --tag ${{ github.ref_name }}
+          --token ${{ secrets.GITHUB_TOKEN }}
