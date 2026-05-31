@@ -6,7 +6,8 @@
 2. Doppelklick. Es ist **kein Administrator** erforderlich — die Installation erfolgt pro Benutzer
    nach `%LocalAppData%\LiveTranscribe`.
 3. Bei der SmartScreen-Warnung (unsigniertes MVP): „Weitere Informationen“ → „Trotzdem ausführen“.
-4. Nach der Installation startet die App und legt ein Startmenü-Eintrag an.
+4. Fehlt die **.NET 8 Desktop Runtime**, installiert das Setup sie automatisch mit (Velopack).
+5. Nach der Installation startet die App und legt ein Startmenü-Eintrag an.
 
 ## Was wird wo abgelegt?
 

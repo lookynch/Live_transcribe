@@ -65,6 +65,7 @@ jobs:
           --mainExe LiveTranscribe.exe
           --icon build/app.ico
           --releaseNotes build/notes.md
+          --framework net8.0-x64-desktop
           --channel win
 
       - name: Release veröffentlichen (stabil)

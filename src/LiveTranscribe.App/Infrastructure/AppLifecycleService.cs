@@ -132,17 +132,20 @@ public sealed class AppLifecycleService(
         try
         {
             var result = await updates.CheckAsync(settings.Current.Update.AllowPrerelease);
-            if (result.UpdateAvailable)
-            {
-                Dispatch(() => _tray?.ShowBalloonTip(
-                    "Update verfügbar",
-                    $"Version {result.NewVersion} ist verfügbar. In den Einstellungen installieren.",
-                    BalloonIcon.Info));
-            }
+            if (!result.UpdateAvailable) return;
+
+            Dispatch(() => _tray?.ShowBalloonTip(
+                "Update wird installiert",
+                $"Version {result.NewVersion} wird im Hintergrund geladen und im Leerlauf installiert.",
+                BalloonIcon.Info));
+
+            // Lädt das Update und wendet es an, sobald die App idle ist (kein laufendes
+            // Diktat). Startet die App danach automatisch neu — kein Nutzerklick nötig.
+            await updates.DownloadAndApplyWhenIdleAsync();
         }
         catch (Exception ex)
         {
-            Log.Warning(ex, "Update-Prüfung beim Start fehlgeschlagen");
+            Log.Warning(ex, "Automatisches Update beim Start fehlgeschlagen");
         }
     }
 

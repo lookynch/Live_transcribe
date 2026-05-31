@@ -19,6 +19,8 @@ Kein Administrator nötig — die App installiert sich pro Benutzer.
 > **SmartScreen-Hinweis:** Das Installationsprogramm ist im MVP **nicht signiert**.
 > Windows kann beim ersten Start warnen → „Weitere Informationen“ → „Trotzdem ausführen“.
 
+> **.NET-Runtime:** Fehlt die .NET 8 Desktop Runtime, installiert das Setup sie automatisch mit.
+
 Details in [INSTALL.md](INSTALL.md).
 
 ## Bedienung
@@ -50,10 +52,11 @@ Beim ersten Gebrauch wird das gewählte Whisper-Modell automatisch nach
 
 ## Updates
 
-Die App prüft optional beim Start auf Updates und zeigt verfügbare Versionen in den
-Einstellungen an. Updates kommen **ausschließlich aus fertigen GitHub-Release-Artefakten**
-und werden **nur im Leerlauf** installiert (nie während Aufnahme/Transkription/Einfügen).
-Schlägt ein Update fehl, läuft die bisherige Version unverändert weiter.
+Die App prüft beim Start auf Updates und installiert sie **vollautomatisch im Leerlauf**
+(nie während Aufnahme/Transkription/Einfügen), danach startet sie neu — kein Klick nötig.
+Updates kommen **ausschließlich aus fertigen GitHub-Release-Artefakten**. Schlägt ein Update
+fehl, läuft die bisherige Version unverändert weiter. Manuell prüfen lässt sich jederzeit über
+**Einstellungen → Updates**; den Auto-Check beim Start kann man dort auch abschalten.
 
 ## Speicherorte
 
