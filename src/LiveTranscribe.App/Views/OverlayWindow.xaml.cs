@@ -1,7 +1,9 @@
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media.Animation;
 using LiveTranscribe.App.ViewModels;
 using LiveTranscribe.Core.Abstractions;
 
@@ -23,6 +25,7 @@ public partial class OverlayWindow : Window
 
     private readonly ISettingsService _settings;
     private readonly Func<SettingsWindow> _settingsWindowFactory;
+    private readonly OverlayViewModel _viewModel;
 
     public OverlayWindow(OverlayViewModel viewModel, ISettingsService settings, Func<SettingsWindow> settingsWindowFactory)
     {
@@ -30,11 +33,26 @@ public partial class OverlayWindow : Window
         DataContext = viewModel;
         _settings = settings;
         _settingsWindowFactory = settingsWindowFactory;
+        _viewModel = viewModel;
+
+        // The waveform animation must be started in code: a Storyboard launched from a Style cannot
+        // use TargetName, but our equalizer targets the named bars + glow. Begin(this, …) resolves
+        // those names against this window's namescope, so TargetName stays valid.
+        _viewModel.PropertyChanged += OnViewModelPropertyChanged;
 
         var o = settings.Current.Overlay;
         Left = o.Left;
         Top = o.Top;
         Topmost = o.AlwaysOnTop;
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(OverlayViewModel.IsRecording)) return;
+
+        var storyboard = (Storyboard)FindResource("WaveAnim");
+        if (_viewModel.IsRecording) storyboard.Begin(this, isControllable: true);
+        else storyboard.Stop(this);
     }
 
     protected override void OnSourceInitialized(EventArgs e)

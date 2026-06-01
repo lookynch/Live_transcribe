@@ -1,8 +1,12 @@
-## Live Transcribe 1.1.0
+## Live Transcribe 1.1.1
 
 Lokale Sprachdiktier-App mit optionaler OpenAI-Textoptimierung.
 
-**Neu in dieser Version**
+**Behoben in dieser Version**
+- Startabsturz des Overlays (Storyboard/„TargetName"-Fehler) behoben — das Overlay startet wieder
+  zuverlässig, die Waveform-/Glow-Animation funktioniert unverändert.
+
+**Aus 1.1.0**
 - Live-Vorschau des gesprochenen Texts während der Aufnahme (schnelles Tiny-Modell).
 - Frei belegbare Aufnahme-Tastenkürzel im Einstellungsfenster.
 - Kompakteres, moderneres Overlay mit animierter Waveform.

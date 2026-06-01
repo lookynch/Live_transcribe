@@ -46,20 +46,6 @@
         <Border.Effect>
             <DropShadowEffect x:Name="PillGlow" BlurRadius="22" ShadowDepth="0" Opacity="0.4" Color="#000000" />
         </Border.Effect>
-        <Border.Style>
-            <Style TargetType="Border">
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsRecording}" Value="True">
-                        <DataTrigger.EnterActions>
-                            <BeginStoryboard x:Name="WaveBegin" Storyboard="{StaticResource WaveAnim}" />
-                        </DataTrigger.EnterActions>
-                        <DataTrigger.ExitActions>
-                            <StopStoryboard BeginStoryboardName="WaveBegin" />
-                        </DataTrigger.ExitActions>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Border.Style>
 
         <StackPanel>
             <!-- Compact row: mic, status, waveform, expander -->

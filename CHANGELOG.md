@@ -6,6 +6,13 @@ Versionierung nach [SemVer](https://semver.org/lang/de/).
 
 ## [Unveröffentlicht]
 
+## [1.1.1] — 2026-06-01
+
+### Behoben
+- Startabsturz des Overlays („Eine Storyboard-Struktur in einem ‚Style' kann keinen ‚TargetName'
+  angeben"): Die Waveform-/Glow-Animation wird jetzt aus dem Code-Behind gegen den Fenster-Namescope
+  gestartet statt aus einem Style-Trigger.
+
 ## [1.1.0] — 2026-06-01
 
 ### Hinzugefügt
@@ -42,6 +49,7 @@ Versionierung nach [SemVer](https://semver.org/lang/de/).
 - Saubere Deinstallation inkl. Autostart-, Temp- und optionaler Nutzerdaten-Bereinigung.
 - GitHub-Actions-Release-Workflow (Tag `v*` → Build, Test, Pack, Upload).
 
-[Unveröffentlicht]: ../../compare/v1.1.0...HEAD
+[Unveröffentlicht]: ../../compare/v1.1.1...HEAD
+[1.1.1]: ../../compare/v1.1.0...v1.1.1
 [1.1.0]: ../../compare/v1.0.0...v1.1.0
 [1.0.0]: ../../releases/tag/v1.0.0
