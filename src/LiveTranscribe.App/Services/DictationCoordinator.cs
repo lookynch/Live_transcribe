@@ -13,17 +13,41 @@ public sealed record DictationResult(string RawText, string FinalText, Processin
 /// WAV is always deleted, and <see cref="IAppBusyState"/> is held for the whole
 /// run so updates can't interrupt it.
 /// </summary>
-public sealed class DictationCoordinator(
-    IAudioRecordingService recorder,
-    IWhisperModelService models,
-    ILocalSpeechToTextService speech,
-    IOpenAiTextOptimizationService optimizer,
-    ITextInsertionService insertion,
-    IActiveWindowService activeWindow,
-    IClipboardService clipboard,
-    ISettingsService settings,
-    IAppBusyState busy)
+public sealed class DictationCoordinator
 {
+    private readonly IAudioRecordingService recorder;
+    private readonly ILocalSpeechToTextService speech;
+    private readonly IOpenAiTextOptimizationService optimizer;
+    private readonly ITextInsertionService insertion;
+    private readonly IActiveWindowService activeWindow;
+    private readonly IClipboardService clipboard;
+    private readonly ISettingsService settings;
+    private readonly IAppBusyState busy;
+    private readonly ILiveTranscriptionService live;
+
+    public DictationCoordinator(
+        IAudioRecordingService recorder,
+        ILocalSpeechToTextService speech,
+        IOpenAiTextOptimizationService optimizer,
+        ITextInsertionService insertion,
+        IActiveWindowService activeWindow,
+        IClipboardService clipboard,
+        ISettingsService settings,
+        IAppBusyState busy,
+        ILiveTranscriptionService live)
+    {
+        this.recorder = recorder;
+        this.speech = speech;
+        this.optimizer = optimizer;
+        this.insertion = insertion;
+        this.activeWindow = activeWindow;
+        this.clipboard = clipboard;
+        this.settings = settings;
+        this.busy = busy;
+        this.live = live;
+        live.PartialTranscript += text => PartialTranscript?.Invoke(text);
+    }
+
     private IntPtr _target;
     private IDisposable? _busyScope;
 
@@ -34,6 +58,9 @@ public sealed class DictationCoordinator(
 
     public event Action<AppStatus, string?>? StatusChanged;
     public event Action<DictationResult>? PreviewRequested;
+
+    /// <summary>Approximate partial transcript shown live while recording (from the preview model).</summary>
+    public event Action<string>? PartialTranscript;
     public event EventHandler<float>? LevelChanged
     {
         add => recorder.LevelChanged += value;
@@ -49,6 +76,8 @@ public sealed class DictationCoordinator(
         {
             _target = activeWindow.CaptureForeground();
             recorder.Start();
+            if (settings.Current.LiveTranscription.Enabled)
+                live.Start(settings.Current.Language);
             Report(AppStatus.Recording);
         }
         catch (Exception ex)
@@ -66,11 +95,11 @@ public sealed class DictationCoordinator(
         string? wavPath = null;
         try
         {
+            await live.StopAsync().ConfigureAwait(false);
             wavPath = await recorder.StopAsync().ConfigureAwait(false);
 
             var s = settings.Current;
             Report(AppStatus.TranscribingLocal);
-            await models.EnsureModelAsync(s.WhisperModel).ConfigureAwait(false);
             var raw = (await speech.TranscribeAsync(wavPath, s.Language).ConfigureAwait(false)).Trim();
 
             if (string.IsNullOrWhiteSpace(raw))

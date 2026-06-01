@@ -18,12 +18,34 @@ public interface IAudioRecordingService
     /// <summary>Stops recording and returns the path to the written WAV file.</summary>
     Task<string> StopAsync();
     event EventHandler<float>? LevelChanged;
+
+    /// <summary>Raised per captured buffer with a copy of the PCM samples, for live transcription.</summary>
+    event EventHandler<AudioFrame>? SamplesAvailable;
 }
 
 /// <summary>Local, offline speech-to-text. No audio ever leaves the machine.</summary>
 public interface ILocalSpeechToTextService
 {
     Task<string> TranscribeAsync(string wavPath, string language, CancellationToken ct = default);
+
+    /// <summary>Loads the selected model into memory ahead of time so the first dictation is fast.</summary>
+    Task PrewarmAsync(CancellationToken ct = default);
+}
+
+/// <summary>
+/// Produces an approximate live transcript while recording by periodically re-running a small
+/// Whisper model over a rolling window of the audio captured so far. Independent of the final
+/// (accurate) transcription, which still runs on the full WAV at stop.
+/// </summary>
+public interface ILiveTranscriptionService
+{
+    bool IsRunning { get; }
+    /// <summary>Starts the live loop, consuming audio frames from the recorder.</summary>
+    void Start(string language);
+    /// <summary>Cancels the loop and waits for any in-flight pass to drain.</summary>
+    Task StopAsync();
+    /// <summary>Latest approximate partial text. Consumers must marshal to the UI thread.</summary>
+    event Action<string>? PartialTranscript;
 }
 
 /// <summary>Manages download/availability of ggml Whisper models in %LocalAppData%.</summary>

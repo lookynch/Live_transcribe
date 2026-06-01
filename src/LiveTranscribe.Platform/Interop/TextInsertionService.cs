@@ -25,10 +25,12 @@ public sealed class TextInsertionService : ITextInsertionService
     {
         if (string.IsNullOrEmpty(text)) return;
 
-        _activeWindow.RestoreForeground(targetWindow);
-        await Task.Delay(80); // give the target time to become active again
+        var focused = await TryRestoreFocusAsync(targetWindow);
 
-        if (method == InsertMethod.Keystrokes)
+        // If we couldn't confirm the original window is foreground, a clipboard paste would
+        // land nowhere useful. Typing goes to whatever control currently has focus, so it's
+        // the safer fallback. Exactly one insertion method ever runs (never both).
+        if (method == InsertMethod.Keystrokes || !focused)
         {
             _input.TypeText(text);
             return;
@@ -38,9 +40,9 @@ public sealed class TextInsertionService : ITextInsertionService
         try
         {
             _clipboard.SetText(text);
-            await Task.Delay(30);
+            await Task.Delay(40);
             _input.SendPaste();
-            await Task.Delay(120); // let the target consume the paste before restoring
+            await Task.Delay(220); // let the target consume the paste before restoring
         }
         catch
         {
@@ -51,5 +53,24 @@ public sealed class TextInsertionService : ITextInsertionService
         {
             _clipboard.Restore(snapshot);
         }
+    }
+
+    /// <summary>
+    /// Re-focuses the target window and verifies it actually became foreground, retrying a
+    /// few times because Windows often delays/blocks SetForegroundWindow from a background app.
+    /// Returns true once the target is confirmed foreground.
+    /// </summary>
+    private async Task<bool> TryRestoreFocusAsync(IntPtr targetWindow)
+    {
+        if (targetWindow == IntPtr.Zero) return false;
+
+        for (var attempt = 0; attempt < 5; attempt++)
+        {
+            _activeWindow.RestoreForeground(targetWindow);
+            await Task.Delay(60);
+            if (_activeWindow.CaptureForeground() == targetWindow)
+                return true;
+        }
+        return false;
     }
 }

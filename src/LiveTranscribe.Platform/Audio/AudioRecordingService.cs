@@ -1,5 +1,6 @@
 using LiveTranscribe.Core;
 using LiveTranscribe.Core.Abstractions;
+using LiveTranscribe.Core.Models;
 using NAudio.Wave;
 
 namespace LiveTranscribe.Platform.Audio;
@@ -18,10 +19,14 @@ public sealed class AudioRecordingService : IAudioRecordingService
     public bool IsRecording { get; private set; }
 
     public event EventHandler<float>? LevelChanged;
+    public event EventHandler<AudioFrame>? SamplesAvailable;
 
     public void Start()
     {
         if (IsRecording) return;
+
+        if (WaveInEvent.DeviceCount == 0)
+            throw new InvalidOperationException("Kein Mikrofon gefunden. Bitte ein Aufnahmegerät anschließen und prüfen, ob der Zugriff erlaubt ist.");
 
         _currentPath = Path.Combine(AppPaths.TempDir, $"rec_{DateTime.UtcNow:yyyyMMdd_HHmmss_fff}.wav");
         _waveIn = new WaveInEvent { WaveFormat = new WaveFormat(16000, 16, 1) };
@@ -56,6 +61,16 @@ public sealed class AudioRecordingService : IAudioRecordingService
             if (sample > peak) peak = sample;
         }
         LevelChanged?.Invoke(this, peak);
+
+        // Hand a copy of this buffer to live consumers (NAudio reuses e.Buffer).
+        var samples = SamplesAvailable;
+        if (samples is not null && _waveIn is not null)
+        {
+            var copy = new byte[e.BytesRecorded];
+            Array.Copy(e.Buffer, copy, e.BytesRecorded);
+            var fmt = _waveIn.WaveFormat;
+            samples.Invoke(this, new AudioFrame(copy, fmt.SampleRate, fmt.Channels));
+        }
     }
 
     private void OnRecordingStopped(object? sender, StoppedEventArgs e)

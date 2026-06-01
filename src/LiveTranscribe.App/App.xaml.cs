@@ -62,6 +62,7 @@ public partial class App : Application
         services.AddSingleton<IAudioRecordingService, AudioRecordingService>();
         services.AddSingleton<IWhisperModelService, WhisperModelService>();
         services.AddSingleton<ILocalSpeechToTextService, LocalSpeechToTextService>();
+        services.AddSingleton<ILiveTranscriptionService, LiveTranscriptionService>();
         services.AddSingleton<IGlobalHotkeyService, GlobalHotkeyService>();
         services.AddSingleton<IAutostartService>(_ => new AutostartService(Environment.ProcessPath!));
 

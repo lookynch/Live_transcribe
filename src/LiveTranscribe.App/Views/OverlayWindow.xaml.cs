@@ -59,11 +59,11 @@ public partial class OverlayWindow : Window
         var existing = Application.Current.Windows.OfType<SettingsWindow>().FirstOrDefault();
         if (existing is not null)
         {
-            existing.Activate();
+            existing.ShowAndFocus();
             return;
         }
 
         var window = _settingsWindowFactory();
-        window.Show();
+        window.ShowAndFocus();
     }
 }

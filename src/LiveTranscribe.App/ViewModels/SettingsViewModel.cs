@@ -43,6 +43,11 @@ public sealed partial class SettingsViewModel : ObservableObject
         _deleteApiKeyOnUninstall = s.Uninstall.DeleteApiKey;
         _hasApiKey = credentials.HasApiKey;
 
+        _pushToTalkHotkey = Clone(s.PushToTalk);
+        _startStopHotkey = Clone(s.StartStopRecord);
+        _toggleOverlayHotkey = Clone(s.ToggleOverlay);
+        _liveEnabled = s.LiveTranscription.Enabled;
+
         CurrentVersion = updates.CurrentVersion;
         UpdateSource = updates.SourceDescription;
         LastCheck = s.Update.LastCheckUtc?.LocalDateTime.ToString("g") ?? "noch nie";
@@ -73,6 +78,14 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     // ── Autostart ─────────────────────────────────────────────────────────
     [ObservableProperty] private bool _autostartEnabled;
+
+    // ── Hotkeys & Live-Vorschau ───────────────────────────────────────────
+    [ObservableProperty] private HotkeyConfig _pushToTalkHotkey;
+    [ObservableProperty] private HotkeyConfig _startStopHotkey;
+    [ObservableProperty] private HotkeyConfig _toggleOverlayHotkey;
+    [ObservableProperty] private bool _liveEnabled;
+
+    private static HotkeyConfig Clone(HotkeyConfig c) => new(c.VirtualKey, c.Modifiers);
 
     // ── Updates ───────────────────────────────────────────────────────────
     public string CurrentVersion { get; }
@@ -150,6 +163,10 @@ public sealed partial class SettingsViewModel : ObservableObject
         s.Uninstall.DeleteModels = DeleteModelsOnUninstall;
         s.Uninstall.DeleteApiKey = DeleteApiKeyOnUninstall;
         s.Autostart = AutostartEnabled;
+        s.PushToTalk = Clone(PushToTalkHotkey);
+        s.StartStopRecord = Clone(StartStopHotkey);
+        s.ToggleOverlay = Clone(ToggleOverlayHotkey);
+        s.LiveTranscription.Enabled = LiveEnabled;
         _settings.Save();
         _hotkeys.Reload(s);
     }

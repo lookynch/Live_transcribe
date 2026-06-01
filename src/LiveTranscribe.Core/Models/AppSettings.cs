@@ -25,6 +25,7 @@ public sealed class AppSettings
     public bool FallbackToRawOnOpenAiError { get; set; } = true;
 
     public OverlaySettings Overlay { get; set; } = new();
+    public LiveTranscriptionSettings LiveTranscription { get; set; } = new();
     public UpdatePreferences Update { get; set; } = new();
     public UninstallPreferences Uninstall { get; set; } = new();
 
@@ -38,6 +39,21 @@ public sealed class OverlaySettings
     public double Top { get; set; } = 40;
     public bool AlwaysOnTop { get; set; } = true;
     public bool Minimized { get; set; }
+
+    /// <summary>Whether the mode/tone options are expanded under the compact pill.</summary>
+    public bool Expanded { get; set; }
+}
+
+/// <summary>
+/// Settings for the live, in-progress transcript shown while recording. The live preview uses
+/// a small fast model (default Tiny); the final inserted text always uses the main model.
+/// </summary>
+public sealed class LiveTranscriptionSettings
+{
+    public bool Enabled { get; set; } = true;
+    public WhisperModelType PreviewModel { get; set; } = WhisperModelType.Tiny;
+    public double RefreshSeconds { get; set; } = 1.75;
+    public double WindowSeconds { get; set; } = 15;
 }
 
 public sealed class UpdatePreferences

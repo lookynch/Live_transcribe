@@ -25,6 +25,9 @@ public sealed class LocalSpeechToTextService : ILocalSpeechToTextService, IDispo
         _settings = settings;
     }
 
+    public async Task PrewarmAsync(CancellationToken ct = default) =>
+        await GetWarmFactoryAsync(ct).ConfigureAwait(false);
+
     public async Task<string> TranscribeAsync(string wavPath, string language, CancellationToken ct = default)
     {
         if (string.IsNullOrEmpty(wavPath) || !File.Exists(wavPath))

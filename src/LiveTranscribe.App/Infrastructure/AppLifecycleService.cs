@@ -25,7 +25,9 @@ public sealed class AppLifecycleService(
     ISettingsService settings,
     IUpdateService updates,
     IClipboardService clipboard,
-    ITextInsertionService insertion) : IHostedService
+    ITextInsertionService insertion,
+    IWhisperModelService models,
+    ILocalSpeechToTextService speech) : IHostedService
 {
     private TaskbarIcon? _tray;
 
@@ -46,10 +48,41 @@ public sealed class AppLifecycleService(
             if (!settings.Current.Overlay.Minimized) overlay.Show();
         });
 
+        _ = PrewarmModelAsync();
+
         if (settings.Current.Update.CheckOnStartup)
             _ = CheckForUpdatesAtStartupAsync();
 
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Downloads (if needed) and loads the Whisper model into memory at startup so the first
+    /// dictation is fast and doesn't silently stall behind a multi-second download. Progress is
+    /// shown on the overlay so the user always sees what's happening.
+    /// </summary>
+    private async Task PrewarmModelAsync()
+    {
+        try
+        {
+            var model = settings.Current.WhisperModel;
+            if (!models.IsInstalled(model))
+            {
+                OverlayVm.SetStatus("Sprachmodell wird geladen…");
+                var progress = new Progress<double>(bytes =>
+                    OverlayVm.SetStatus($"Sprachmodell wird geladen… {bytes / 1_048_576.0:0} MB"));
+                await models.EnsureModelAsync(model, progress);
+            }
+
+            OverlayVm.SetStatus("Sprachmodell wird vorbereitet…");
+            await speech.PrewarmAsync();
+            OverlayVm.SetStatus("Bereit");
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Vorwärmen des Sprachmodells fehlgeschlagen");
+            OverlayVm.SetStatus("Modell-Ladefehler – bitte Einstellungen prüfen");
+        }
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
@@ -120,11 +153,10 @@ public sealed class AppLifecycleService(
     private void ShowSettings()
     {
         var existing = Application.Current.Windows.OfType<SettingsWindow>().FirstOrDefault();
-        if (existing is not null) { existing.Activate(); return; }
+        if (existing is not null) { existing.ShowAndFocus(); return; }
 
         var window = services.GetRequiredService<SettingsWindow>();
-        window.Show();
-        window.Activate();
+        window.ShowAndFocus();
     }
 
     private async Task CheckForUpdatesAtStartupAsync()

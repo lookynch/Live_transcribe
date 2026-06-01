@@ -6,6 +6,30 @@ Versionierung nach [SemVer](https://semver.org/lang/de/).
 
 ## [Unveröffentlicht]
 
+## [1.1.0] — 2026-06-01
+
+### Hinzugefügt
+- **Live-Vorschau während der Aufnahme**: ein schnelles Tiny-Modell transkribiert ein
+  gleitendes Audiofenster (~15 s) periodisch und zeigt den vorläufigen Text direkt im Overlay.
+  Der finale Text nutzt weiterhin das gewählte Hauptmodell. In den Einstellungen abschaltbar.
+- **Eigene Aufnahme-Tastenkürzel**: Push-to-Talk, Start/Stopp und Overlay-Umschalten lassen sich
+  im Einstellungsfenster frei belegen (Kombination drücken, Esc bricht ab).
+- **Modell-Vorwärmen beim Start**: das gewählte Whisper-Modell wird beim Programmstart geladen
+  (mit sichtbarem Fortschritt), sodass die erste Transkription sofort schnell ist.
+
+### Geändert
+- **Kompakteres, moderneres Overlay**: schlanke Pille mit animierter Waveform und Akzent-Glow
+  bei Aufnahme; Modus-/Ton-Optionen klappen nur bei Bedarf aus.
+- **Modernisiertes Einstellungsfenster** mit Karten-Layout und einheitlichen Controls; öffnet
+  jetzt zuverlässig im Vordergrund (auch über dem Always-on-top-Overlay).
+
+### Behoben
+- **Einfügen zuverlässiger**: Fokus auf das Zielfenster wird vor dem Einfügen verifiziert
+  (mit kurzem Retry); bei fehlgeschlagenem Fokus automatischer Tipp-Fallback statt stiller Fehler.
+- Klare Rückmeldung bei fehlendem Mikrofon und leerer Aufnahme statt wirkungslosem Verhalten.
+
+## [1.0.0]
+
 ### Hinzugefügt
 - Lokale Sprachtranskription mit Whisper (kein Audio-Upload).
 - Schwebendes Overlay (fokus-neutral) + Tray-Icon.
@@ -18,4 +42,6 @@ Versionierung nach [SemVer](https://semver.org/lang/de/).
 - Saubere Deinstallation inkl. Autostart-, Temp- und optionaler Nutzerdaten-Bereinigung.
 - GitHub-Actions-Release-Workflow (Tag `v*` → Build, Test, Pack, Upload).
 
-[Unveröffentlicht]: ../../compare/HEAD
+[Unveröffentlicht]: ../../compare/v1.1.0...HEAD
+[1.1.0]: ../../compare/v1.0.0...v1.1.0
+[1.0.0]: ../../releases/tag/v1.0.0
