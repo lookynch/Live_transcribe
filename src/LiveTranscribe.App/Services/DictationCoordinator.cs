@@ -4,14 +4,11 @@ using Serilog;
 
 namespace LiveTranscribe.App.Services;
 
-/// <summary>Raised when the pipeline produces text destined for the preview window.</summary>
-public sealed record DictationResult(string RawText, string FinalText, ProcessingMode Mode);
-
 /// <summary>
 /// Orchestrates one dictation run end to end: capture foreground → record →
-/// local transcription → optional OpenAI rework → insert/copy/preview. The temp
-/// WAV is always deleted, and <see cref="IAppBusyState"/> is held for the whole
-/// run so updates can't interrupt it.
+/// local transcription → optional OpenAI rework → insert into the focused field
+/// (or clipboard). The temp WAV is always deleted, and <see cref="IAppBusyState"/>
+/// is held for the whole run so updates can't interrupt it.
 /// </summary>
 public sealed class DictationCoordinator
 {
@@ -20,6 +17,7 @@ public sealed class DictationCoordinator
     private readonly IOpenAiTextOptimizationService optimizer;
     private readonly ITextInsertionService insertion;
     private readonly IActiveWindowService activeWindow;
+    private readonly IFocusedFieldProbe fieldProbe;
     private readonly IClipboardService clipboard;
     private readonly ISettingsService settings;
     private readonly IAppBusyState busy;
@@ -31,6 +29,7 @@ public sealed class DictationCoordinator
         IOpenAiTextOptimizationService optimizer,
         ITextInsertionService insertion,
         IActiveWindowService activeWindow,
+        IFocusedFieldProbe fieldProbe,
         IClipboardService clipboard,
         ISettingsService settings,
         IAppBusyState busy,
@@ -41,6 +40,7 @@ public sealed class DictationCoordinator
         this.optimizer = optimizer;
         this.insertion = insertion;
         this.activeWindow = activeWindow;
+        this.fieldProbe = fieldProbe;
         this.clipboard = clipboard;
         this.settings = settings;
         this.busy = busy;
@@ -53,11 +53,7 @@ public sealed class DictationCoordinator
 
     public bool IsRecording => recorder.IsRecording;
 
-    /// <summary>The window that was focused when recording started — the insertion target.</summary>
-    public IntPtr LastTarget => _target;
-
     public event Action<AppStatus, string?>? StatusChanged;
-    public event Action<DictationResult>? PreviewRequested;
 
     /// <summary>Approximate partial transcript shown live while recording (from the preview model).</summary>
     public event Action<string>? PartialTranscript;
@@ -118,7 +114,7 @@ public sealed class DictationCoordinator
                     .ConfigureAwait(false);
             }
 
-            await DeliverAsync(raw, final, mode, s).ConfigureAwait(false);
+            await DeliverAsync(final).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -132,30 +128,32 @@ public sealed class DictationCoordinator
         }
     }
 
-    private async Task DeliverAsync(string raw, string final, ProcessingMode mode, AppSettings s)
+    /// <summary>
+    /// Like a phone keyboard: if the user's focus is a text field, type the text straight in;
+    /// otherwise there is nowhere to type, so leave it on the clipboard to paste manually. No
+    /// per-mode setting — the behaviour is automatic.
+    /// </summary>
+    private async Task DeliverAsync(string final)
     {
-        switch (s.PostRecordBehavior)
+        if (fieldProbe.IsEditableFieldFocused())
         {
-            case PostRecordBehavior.ShowPreview:
-                PreviewRequested?.Invoke(new DictationResult(raw, final, mode));
-                Report(AppStatus.Ready);
-                break;
-
-            case PostRecordBehavior.CopyOnly:
+            // InsertAsync pastes via the clipboard and, if that fails, types the text instead —
+            // so a briefly-locked clipboard can't lose the dictation.
+            await insertion.InsertAsync(final, InsertMethod.ClipboardPaste, _target).ConfigureAwait(false);
+            Report(AppStatus.Inserted);
+        }
+        else
+        {
+            try
+            {
                 clipboard.SetText(final);
-                Report(AppStatus.Inserted, "In Zwischenablage kopiert");
-                break;
-
-            case PostRecordBehavior.InsertRaw:
-                await insertion.InsertAsync(raw, InsertMethod.ClipboardPaste, _target).ConfigureAwait(false);
-                Report(AppStatus.Inserted);
-                break;
-
-            case PostRecordBehavior.TranscribeOptimizeInsert:
-            default:
-                await insertion.InsertAsync(final, InsertMethod.ClipboardPaste, _target).ConfigureAwait(false);
-                Report(AppStatus.Inserted);
-                break;
+                Report(AppStatus.Inserted, "Kein Textfeld aktiv – in Zwischenablage kopiert");
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "Zwischenablage nicht verfügbar");
+                Report(AppStatus.Error, "Zwischenablage belegt – bitte erneut versuchen");
+            }
         }
     }
 

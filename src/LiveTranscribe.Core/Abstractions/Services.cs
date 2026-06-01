@@ -76,6 +76,16 @@ public interface IActiveWindowService
     void RestoreForeground(IntPtr handle);
 }
 
+/// <summary>
+/// Detects whether the user's current input focus is an editable text field (a blinking
+/// caret or a known edit control). Used to decide: paste into the field, or fall back to
+/// the clipboard when there is nowhere to type.
+/// </summary>
+public interface IFocusedFieldProbe
+{
+    bool IsEditableFieldFocused();
+}
+
 /// <summary>Clipboard get/set with snapshot+restore.</summary>
 public interface IClipboardService
 {

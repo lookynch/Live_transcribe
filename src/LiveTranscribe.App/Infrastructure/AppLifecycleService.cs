@@ -20,12 +20,9 @@ namespace LiveTranscribe.App.Infrastructure;
 public sealed class AppLifecycleService(
     IServiceProvider services,
     OverlayWindow overlay,
-    DictationCoordinator coordinator,
     IGlobalHotkeyService hotkeys,
     ISettingsService settings,
     IUpdateService updates,
-    IClipboardService clipboard,
-    ITextInsertionService insertion,
     IWhisperModelService models,
     ILocalSpeechToTextService speech) : IHostedService
 {
@@ -36,7 +33,6 @@ public sealed class AppLifecycleService(
         Dispatch(() =>
         {
             CreateTray();
-            coordinator.PreviewRequested += OnPreviewRequested;
 
             hotkeys.Reload(settings.Current);
             hotkeys.PushToTalkDown += (_, _) => Dispatch(() => _ = StartRecordingSafe());
@@ -109,17 +105,6 @@ public sealed class AppLifecycleService(
         else overlay.Show();
         settings.Current.Overlay.Minimized = !overlay.IsVisible;
         settings.Save();
-    }
-
-    private void OnPreviewRequested(DictationResult result)
-    {
-        Dispatch(() =>
-        {
-            var vm = new PreviewViewModel(result, coordinator.LastTarget, clipboard, insertion);
-            var window = new PreviewWindow(vm);
-            window.Show();
-            window.Activate();
-        });
     }
 
     private void CreateTray()

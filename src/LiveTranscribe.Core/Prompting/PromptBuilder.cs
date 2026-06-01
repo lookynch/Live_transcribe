@@ -15,7 +15,10 @@ public static class PromptBuilder
         sb.AppendLine(
             "Du bist ein Assistent, der diktierten, lokal transkribierten Text überarbeitet. " +
             "Gib ausschließlich den überarbeiteten Text zurück — ohne Anführungszeichen, " +
-            "ohne Vorbemerkung, ohne Erklärung. Behalte die Sprache des Eingabetextes bei.");
+            "ohne Vorbemerkung, ohne Erklärung. Behalte die Sprache des Eingabetextes bei. " +
+            "Übernimm und nutze sinnvolle Formatierung: Absätze und Zeilenumbrüche, sowie " +
+            "Aufzählungen (mit „- “) oder nummerierte Listen, wo sie den Text klarer gliedern. " +
+            "Erfinde keine Formatierung, wo Fließtext angemessen ist.");
         sb.AppendLine();
         sb.AppendLine("Aufgabe: " + DescribeMode(mode, customInstruction));
 

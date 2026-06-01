@@ -53,8 +53,8 @@
                         <ComboBox ItemsSource="{Binding Models}" SelectedItem="{Binding SelectedModel}" />
                         <TextBlock Text="Sprache" Style="{StaticResource Label}" />
                         <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}" />
-                        <TextBlock Text="Nach Aufnahme" Style="{StaticResource Label}" />
-                        <ComboBox ItemsSource="{Binding Behaviors}" SelectedItem="{Binding SelectedBehavior}" />
+                        <TextBlock Text="Der erkannte Text wird automatisch in das aktive Textfeld eingefügt – ist kein Feld aktiv, landet er in der Zwischenablage."
+                                   Style="{StaticResource Hint}" Margin="0,8,0,0" />
                         <CheckBox Content="Live-Vorschau während der Aufnahme (Tiny-Modell)" IsChecked="{Binding LiveEnabled}" />
                     </StackPanel>
                 </Border>

@@ -6,6 +6,26 @@ Versionierung nach [SemVer](https://semver.org/lang/de/).
 
 ## [Unveröffentlicht]
 
+## [1.2.0] — 2026-06-01
+
+### Hinzugefügt
+- **Automatisches Einfügen wie am Handy**: Ist der Cursor in einem Textfeld, wird der erkannte
+  Text direkt dort eingefügt; ist kein Feld aktiv, landet er in der Zwischenablage. Die
+  Feld-Erkennung nutzt den System-Caret bzw. bekannte Eingabe-Controls.
+
+### Geändert
+- **Einfacher, ohne tiefe Einstellungen**: Das frühere „Nach Aufnahme"-Auswahlfeld entfällt — das
+  Verhalten (Einfügen vs. Zwischenablage) entscheidet sich jetzt automatisch.
+- **KI-Überarbeitung übernimmt Formatierung**: Der System-Prompt weist das Modell an, sinnvolle
+  Absätze, Zeilenumbrüche und Aufzählungen zu erhalten bzw. zu erzeugen.
+
+### Behoben
+- **Unlesbare Dropdowns**: Die Modus-/Ton- und Einstellungs-ComboBoxen zeigten helle Schrift auf
+  hellem Aufklapp-Hintergrund. Sie haben jetzt ein dunkles Popup mit gut lesbaren Einträgen.
+- **Diktat bricht nicht mehr ab, wenn die Zwischenablage kurz gesperrt ist**
+  (`CLIPBRD_E_CANT_OPEN`): Beim Einfügen wird auf Tippen ausgewichen, der Zwischenablage-Weg
+  wird abgefangen statt die ganze Verarbeitung fehlschlagen zu lassen.
+
 ## [1.1.1] — 2026-06-01
 
 ### Behoben
@@ -49,7 +69,8 @@ Versionierung nach [SemVer](https://semver.org/lang/de/).
 - Saubere Deinstallation inkl. Autostart-, Temp- und optionaler Nutzerdaten-Bereinigung.
 - GitHub-Actions-Release-Workflow (Tag `v*` → Build, Test, Pack, Upload).
 
-[Unveröffentlicht]: ../../compare/v1.1.1...HEAD
+[Unveröffentlicht]: ../../compare/v1.2.0...HEAD
+[1.2.0]: ../../compare/v1.1.1...v1.2.0
 [1.1.1]: ../../compare/v1.1.0...v1.1.1
 [1.1.0]: ../../compare/v1.0.0...v1.1.0
 [1.0.0]: ../../releases/tag/v1.0.0

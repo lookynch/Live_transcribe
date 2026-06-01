@@ -30,7 +30,6 @@ public sealed partial class SettingsViewModel : ObservableObject
 
         var s = settings.Current;
         _selectedModel = Models.First(m => m.Value == s.WhisperModel);
-        _selectedBehavior = Behaviors.First(b => b.Value == s.PostRecordBehavior);
         _selectedLanguage = Languages.FirstOrDefault(l => l.Value == s.Language) ?? Languages[0];
         _openAiModel = s.OpenAiModel;
         _fallbackToRaw = s.FallbackToRawOnOpenAiError;
@@ -56,8 +55,6 @@ public sealed partial class SettingsViewModel : ObservableObject
     // ── Dictation ─────────────────────────────────────────────────────────
     public IReadOnlyList<EnumOption<WhisperModelType>> Models { get; } =
         EnumDisplay.Options<WhisperModelType>(EnumDisplay.Describe);
-    public IReadOnlyList<EnumOption<PostRecordBehavior>> Behaviors { get; } =
-        EnumDisplay.Options<PostRecordBehavior>(EnumDisplay.Describe);
     public IReadOnlyList<EnumOption<string>> Languages { get; } = new[]
     {
         new EnumOption<string>("de", "Deutsch"),
@@ -66,7 +63,6 @@ public sealed partial class SettingsViewModel : ObservableObject
     };
 
     [ObservableProperty] private EnumOption<WhisperModelType> _selectedModel;
-    [ObservableProperty] private EnumOption<PostRecordBehavior> _selectedBehavior;
     [ObservableProperty] private EnumOption<string> _selectedLanguage;
     [ObservableProperty] private string _openAiModel;
     [ObservableProperty] private bool _fallbackToRaw;
@@ -152,7 +148,6 @@ public sealed partial class SettingsViewModel : ObservableObject
     {
         var s = _settings.Current;
         s.WhisperModel = SelectedModel.Value;
-        s.PostRecordBehavior = SelectedBehavior.Value;
         s.Language = SelectedLanguage.Value;
         s.OpenAiModel = string.IsNullOrWhiteSpace(OpenAiModel) ? "gpt-4o-mini" : OpenAiModel.Trim();
         s.FallbackToRawOnOpenAiError = FallbackToRaw;

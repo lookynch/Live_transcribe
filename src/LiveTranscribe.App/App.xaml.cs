@@ -58,6 +58,7 @@ public partial class App : Application
         services.AddSingleton<ISecureCredentialService, DpapiCredentialService>();
         services.AddSingleton<IInputSimulator, InputSimulator>();
         services.AddSingleton<IActiveWindowService, ActiveWindowService>();
+        services.AddSingleton<IFocusedFieldProbe, FocusedFieldProbe>();
         services.AddSingleton<ITextInsertionService, TextInsertionService>();
         services.AddSingleton<IAudioRecordingService, AudioRecordingService>();
         services.AddSingleton<IWhisperModelService, WhisperModelService>();
