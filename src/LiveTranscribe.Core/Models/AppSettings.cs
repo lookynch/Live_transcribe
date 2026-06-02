@@ -24,6 +24,12 @@ public sealed class AppSettings
     public string OpenAiModel { get; set; } = "gpt-4o-mini";
     public bool FallbackToRawOnOpenAiError { get; set; } = true;
 
+    /// <summary>
+    /// Optional free-text context the user provides once (name, company, role, signature,
+    /// writing style …). It is added to every OpenAI rework prompt so results fit the user.
+    /// </summary>
+    public string BackgroundInfo { get; set; } = string.Empty;
+
     public OverlaySettings Overlay { get; set; } = new();
     public LiveTranscriptionSettings LiveTranscription { get; set; } = new();
     public UpdatePreferences Update { get; set; } = new();

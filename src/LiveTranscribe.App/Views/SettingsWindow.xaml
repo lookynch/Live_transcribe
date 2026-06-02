@@ -91,6 +91,12 @@
                         <TextBlock Text="OpenAI-Textoptimierung" Style="{StaticResource Section}" />
                         <TextBlock Text="Audio wird niemals an OpenAI gesendet — nur der lokal transkribierte Text, und nur wenn ein Optimierungsmodus gewählt ist."
                                    Style="{StaticResource Hint}" />
+                        <TextBlock Text="Hintergrundinformationen für die KI" Style="{StaticResource Label}" />
+                        <TextBlock Style="{StaticResource Hint}"
+                                   Text="Wird bei jeder Überarbeitung berücksichtigt – z. B. Name, Firma, Rolle, Signatur, Schreibstil." />
+                        <TextBox Text="{Binding BackgroundInfo}" AcceptsReturn="True" TextWrapping="Wrap"
+                                 MinHeight="72" VerticalScrollBarVisibility="Auto" Margin="0,3,0,0" />
+
                         <TextBlock Text="OpenAI-Modell" Style="{StaticResource Label}" />
                         <TextBox Text="{Binding OpenAiModel}" />
                         <CheckBox Content="Bei OpenAI-Fehler Rohtext einfügen" IsChecked="{Binding FallbackToRaw}" />

@@ -9,7 +9,7 @@ namespace LiveTranscribe.Core.Prompting;
 /// </summary>
 public static class PromptBuilder
 {
-    public static string BuildSystemPrompt(ProcessingMode mode, Tone tone, string? customInstruction = null)
+    public static string BuildSystemPrompt(ProcessingMode mode, Tone tone, string? customInstruction = null, string? backgroundInfo = null)
     {
         var sb = new StringBuilder();
         sb.AppendLine(
@@ -30,6 +30,16 @@ public static class PromptBuilder
                 sb.AppendLine();
                 sb.AppendLine("Tonalität: " + toneText);
             }
+        }
+
+        if (!string.IsNullOrWhiteSpace(backgroundInfo))
+        {
+            sb.AppendLine();
+            sb.AppendLine(
+                "Hintergrundinformationen (vom Nutzer hinterlegt) — berücksichtige sie, wenn sie für " +
+                "die Aufgabe relevant sind (z. B. Name, Firma, Rolle, Signatur, Schreibstil); " +
+                "erfinde nichts dazu:");
+            sb.AppendLine(backgroundInfo!.Trim());
         }
 
         return sb.ToString().TrimEnd();

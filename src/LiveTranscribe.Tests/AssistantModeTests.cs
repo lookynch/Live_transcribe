@@ -37,6 +37,24 @@ public sealed class AssistantModeTests
     }
 
     [Fact]
+    public void Background_info_is_woven_into_the_system_prompt_when_present()
+    {
+        var prompt = PromptBuilder.BuildSystemPrompt(
+            ProcessingMode.Assistant, Tone.AutoDetect, customInstruction: null,
+            backgroundInfo: "Jakob Kaiser, Einkauf bei Jeremias GmbH");
+
+        Assert.Contains("Hintergrundinformationen", prompt);
+        Assert.Contains("Jeremias GmbH", prompt);
+    }
+
+    [Fact]
+    public void Background_info_is_omitted_when_empty()
+    {
+        var prompt = PromptBuilder.BuildSystemPrompt(ProcessingMode.Assistant, Tone.AutoDetect);
+        Assert.DoesNotContain("Hintergrundinformationen", prompt);
+    }
+
+    [Fact]
     public async Task Optimize_without_key_falls_back_to_raw_with_a_visible_reason()
     {
         var svc = new OpenAiTextOptimizationService(new NoKeyCredentials(), new FixedSettings(new AppSettings()));

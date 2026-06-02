@@ -6,6 +6,14 @@ Versionierung nach [SemVer](https://semver.org/lang/de/).
 
 ## [Unveröffentlicht]
 
+## [1.4.0] — 2026-06-01
+
+### Hinzugefügt
+- **Hintergrundinformationen für die KI** (Einstellungen → OpenAI): ein frei beschreibbares Feld
+  (Name, Firma, Rolle, Signatur, Schreibstil …). Der Inhalt wird bei **jeder** OpenAI-Überarbeitung
+  in den System-Prompt eingebettet, damit Ergebnisse zum Nutzer passen (z. B. korrekte Anrede und
+  Signatur in E-Mails). Leer = kein Einfluss.
+
 ## [1.3.0] — 2026-06-01
 
 ### Hinzugefügt
@@ -83,7 +91,8 @@ Versionierung nach [SemVer](https://semver.org/lang/de/).
 - Saubere Deinstallation inkl. Autostart-, Temp- und optionaler Nutzerdaten-Bereinigung.
 - GitHub-Actions-Release-Workflow (Tag `v*` → Build, Test, Pack, Upload).
 
-[Unveröffentlicht]: ../../compare/v1.3.0...HEAD
+[Unveröffentlicht]: ../../compare/v1.4.0...HEAD
+[1.4.0]: ../../compare/v1.3.0...v1.4.0
 [1.3.0]: ../../compare/v1.2.0...v1.3.0
 [1.2.0]: ../../compare/v1.1.1...v1.2.0
 [1.1.1]: ../../compare/v1.1.0...v1.1.1

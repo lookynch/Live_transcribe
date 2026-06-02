@@ -34,6 +34,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         _openAiModel = s.OpenAiModel;
         _fallbackToRaw = s.FallbackToRawOnOpenAiError;
         _customInstruction = s.CustomInstruction;
+        _backgroundInfo = s.BackgroundInfo;
         _autostartEnabled = autostart.IsEnabled();
         _checkOnStartup = s.Update.CheckOnStartup;
         _allowPrerelease = s.Update.AllowPrerelease;
@@ -67,6 +68,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private string _openAiModel;
     [ObservableProperty] private bool _fallbackToRaw;
     [ObservableProperty] private string _customInstruction;
+    [ObservableProperty] private string _backgroundInfo;
 
     // ── OpenAI key (DPAPI) ────────────────────────────────────────────────
     [ObservableProperty] private bool _hasApiKey;
@@ -152,6 +154,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         s.OpenAiModel = string.IsNullOrWhiteSpace(OpenAiModel) ? "gpt-4o-mini" : OpenAiModel.Trim();
         s.FallbackToRawOnOpenAiError = FallbackToRaw;
         s.CustomInstruction = CustomInstruction;
+        s.BackgroundInfo = BackgroundInfo;
         s.Update.CheckOnStartup = CheckOnStartup;
         s.Update.AllowPrerelease = AllowPrerelease;
         s.Uninstall.DeleteSettings = DeleteSettingsOnUninstall;

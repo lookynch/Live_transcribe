@@ -28,7 +28,7 @@ public sealed class OpenAiTextOptimizationService(
             if (string.IsNullOrWhiteSpace(apiKey))
                 return Fallback(text, "Kein OpenAI-Key hinterlegt");
 
-            var systemPrompt = PromptBuilder.BuildSystemPrompt(mode, tone, customInstruction);
+            var systemPrompt = PromptBuilder.BuildSystemPrompt(mode, tone, customInstruction, settings.Current.BackgroundInfo);
             var client = new ChatClient(settings.Current.OpenAiModel, apiKey);
 
             var completion = await client.CompleteChatAsync(
