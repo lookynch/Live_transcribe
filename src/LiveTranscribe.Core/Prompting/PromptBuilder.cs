@@ -22,7 +22,7 @@ public static class PromptBuilder
         sb.AppendLine();
         sb.AppendLine("Aufgabe: " + DescribeMode(mode, customInstruction));
 
-        if (mode != ProcessingMode.BetterAiPrompt)
+        if (mode is not ProcessingMode.BetterAiPrompt and not ProcessingMode.Assistant)
         {
             var toneText = DescribeTone(tone, mode);
             if (!string.IsNullOrEmpty(toneText))
@@ -37,6 +37,13 @@ public static class PromptBuilder
 
     public static string DescribeMode(ProcessingMode mode, string? customInstruction = null) => mode switch
     {
+        ProcessingMode.Assistant =>
+            "Der diktierte Text kann eine Anweisung/Bitte ODER zu verbessernder Text sein. " +
+            "Ist es eine Anweisung (z. B. 'schreibe eine Mail …', 'formuliere …', 'fasse zusammen …'), " +
+            "führe sie aus und gib AUSSCHLIESSLICH das fertige Ergebnis zurück (z. B. nur die " +
+            "vollständige E-Mail) — ohne Einleitung, ohne Rückfrage, ohne erklärenden Text, ohne " +
+            "Anführungszeichen. Ist es kein Auftrag, sondern bloß diktierter Text, verbessere ihn " +
+            "(Rechtschreibung, Grammatik, Klarheit) und gib nur den überarbeiteten Text zurück.",
         ProcessingMode.TranscribeOnly =>
             "Gib den Text unverändert zurück.",
         ProcessingMode.FixSpellingGrammar =>

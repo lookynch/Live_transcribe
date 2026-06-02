@@ -17,7 +17,7 @@ public sealed class AppSettings
     public string Language { get; set; } = "de";
 
     public PostRecordBehavior PostRecordBehavior { get; set; } = PostRecordBehavior.InsertRaw;
-    public ProcessingMode DefaultProcessingMode { get; set; } = ProcessingMode.TranscribeOnly;
+    public ProcessingMode DefaultProcessingMode { get; set; } = ProcessingMode.Assistant;
     public Tone DefaultTone { get; set; } = Tone.AutoDetect;
     public string CustomInstruction { get; set; } = string.Empty;
 

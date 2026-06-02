@@ -23,3 +23,14 @@ public sealed class UpdateCheckResult
 
 /// <summary>Describes an available local Whisper model for the settings UI.</summary>
 public sealed record WhisperModelInfo(WhisperModelType Type, string DisplayName, string FileName);
+
+/// <summary>
+/// Outcome of an OpenAI rework attempt. <see cref="UsedOpenAi"/> is true only when OpenAI
+/// actually produced the text; on any fallback <see cref="Notice"/> carries a short, user-facing
+/// reason (e.g. "OpenAI-Kontingent erschöpft") so the overlay can show what happened.
+/// </summary>
+public sealed record OptimizationResult(string Text, bool UsedOpenAi, string? Notice)
+{
+    public static OptimizationResult FromOpenAi(string text) => new(text, true, null);
+    public static OptimizationResult Fallback(string raw, string notice) => new(raw, false, notice);
+}

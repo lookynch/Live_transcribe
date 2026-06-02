@@ -106,15 +106,19 @@ public sealed class DictationCoordinator
 
             var mode = s.DefaultProcessingMode;
             var final = raw;
+            string? note = null;
             if (mode != ProcessingMode.TranscribeOnly)
             {
                 Report(AppStatus.Optimizing);
-                final = await optimizer
+                var opt = await optimizer
                     .OptimizeAsync(raw, mode, s.DefaultTone, s.CustomInstruction)
                     .ConfigureAwait(false);
+                final = opt.Text;
+                // Always tell the user whether OpenAI actually reworked the text, or why it didn't.
+                note = opt.UsedOpenAi ? "mit OpenAI" : $"{opt.Notice} – Rohtext";
             }
 
-            await DeliverAsync(final).ConfigureAwait(false);
+            await DeliverAsync(final, note).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -133,21 +137,22 @@ public sealed class DictationCoordinator
     /// otherwise there is nowhere to type, so leave it on the clipboard to paste manually. No
     /// per-mode setting — the behaviour is automatic.
     /// </summary>
-    private async Task DeliverAsync(string final)
+    private async Task DeliverAsync(string final, string? note)
     {
         if (fieldProbe.IsEditableFieldFocused())
         {
             // InsertAsync pastes via the clipboard and, if that fails, types the text instead —
             // so a briefly-locked clipboard can't lose the dictation.
             await insertion.InsertAsync(final, InsertMethod.ClipboardPaste, _target).ConfigureAwait(false);
-            Report(AppStatus.Inserted);
+            Report(AppStatus.Inserted, note);
         }
         else
         {
+            var clip = "in Zwischenablage";
             try
             {
                 clipboard.SetText(final);
-                Report(AppStatus.Inserted, "Kein Textfeld aktiv – in Zwischenablage kopiert");
+                Report(AppStatus.Inserted, note is null ? $"Kein Textfeld aktiv – {clip}" : $"{note}, {clip}");
             }
             catch (Exception ex)
             {

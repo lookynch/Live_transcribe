@@ -53,7 +53,7 @@ public class SettingsSerializationTests
     {
         var json = JsonSerializer.Serialize(new AppSettings(), Options);
         Assert.Contains("\"BaseQ5_0\"", json);
-        Assert.Contains("\"TranscribeOnly\"", json);
+        Assert.Contains("\"Assistant\"", json);
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class SettingsSerializationTests
         var s = new AppSettings();
         Assert.Equal("de", s.Language);
         Assert.Equal(WhisperModelType.BaseQ5_0, s.WhisperModel);
-        Assert.Equal(ProcessingMode.TranscribeOnly, s.DefaultProcessingMode);
+        Assert.Equal(ProcessingMode.Assistant, s.DefaultProcessingMode);
         Assert.True(s.FallbackToRawOnOpenAiError);
         Assert.True(s.Update.CheckOnStartup);
         Assert.True(s.Uninstall.DeleteApiKey);

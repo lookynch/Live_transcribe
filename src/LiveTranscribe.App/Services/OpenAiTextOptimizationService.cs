@@ -16,20 +16,17 @@ public sealed class OpenAiTextOptimizationService(
     ISecureCredentialService credentials,
     ISettingsService settings) : IOpenAiTextOptimizationService
 {
-    public async Task<string> OptimizeAsync(
+    public async Task<OptimizationResult> OptimizeAsync(
         string text, ProcessingMode mode, Tone tone, string? customInstruction, CancellationToken ct = default)
     {
-        if (mode == ProcessingMode.TranscribeOnly)
-            return text;
-
-        if (string.IsNullOrWhiteSpace(text))
-            return text;
+        if (mode == ProcessingMode.TranscribeOnly || string.IsNullOrWhiteSpace(text))
+            return new OptimizationResult(text, UsedOpenAi: false, Notice: null);
 
         try
         {
             var apiKey = credentials.GetApiKey();
             if (string.IsNullOrWhiteSpace(apiKey))
-                return Fallback(text, "Kein OpenAI-API-Key hinterlegt");
+                return Fallback(text, "Kein OpenAI-Key hinterlegt");
 
             var systemPrompt = PromptBuilder.BuildSystemPrompt(mode, tone, customInstruction);
             var client = new ChatClient(settings.Current.OpenAiModel, apiKey);
@@ -46,7 +43,7 @@ public sealed class OpenAiTextOptimizationService(
             if (string.IsNullOrWhiteSpace(result))
                 return Fallback(text, "OpenAI lieferte leeren Text zurück");
 
-            return result;
+            return OptimizationResult.FromOpenAi(result);
         }
         catch (OperationCanceledException)
         {
@@ -56,8 +53,8 @@ public sealed class OpenAiTextOptimizationService(
         {
             var reason = ex.Status switch
             {
-                401 => "OpenAI-API-Key ungültig",
-                429 => "OpenAI-Ratenlimit erreicht",
+                401 => "OpenAI-Key ungültig",
+                429 => "OpenAI-Kontingent erschöpft",
                 _ => $"OpenAI-Fehler (HTTP {ex.Status})"
             };
             return Fallback(text, reason, ex);
@@ -68,12 +65,12 @@ public sealed class OpenAiTextOptimizationService(
         }
     }
 
-    private string Fallback(string raw, string reason, Exception? ex = null)
+    private OptimizationResult Fallback(string raw, string reason, Exception? ex = null)
     {
         if (settings.Current.FallbackToRawOnOpenAiError)
         {
             Log.Warning(ex, "OpenAI-Optimierung übersprungen ({Reason}); Rohtext wird verwendet", reason);
-            return raw;
+            return OptimizationResult.Fallback(raw, reason);
         }
 
         Log.Error(ex, "OpenAI-Optimierung fehlgeschlagen ({Reason}); Fallback deaktiviert", reason);

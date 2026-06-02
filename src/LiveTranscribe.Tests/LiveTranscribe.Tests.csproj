@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LiveTranscribe.Core\LiveTranscribe.Core.csproj" />
     <ProjectReference Include="..\LiveTranscribe.Platform\LiveTranscribe.Platform.csproj" />
+    <ProjectReference Include="..\LiveTranscribe.App\LiveTranscribe.App.csproj" />
   </ItemGroup>
 
 </Project>

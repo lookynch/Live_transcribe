@@ -29,7 +29,8 @@ public sealed partial class OverlayViewModel : ObservableObject
         EnumDisplay.Options<Tone>(EnumDisplay.Describe);
 
     /// <summary>Tone only applies when an OpenAI rework mode is selected.</summary>
-    public bool IsToneEnabled => SelectedMode.Value is not ProcessingMode.TranscribeOnly and not ProcessingMode.BetterAiPrompt;
+    public bool IsToneEnabled => SelectedMode.Value is not ProcessingMode.TranscribeOnly
+        and not ProcessingMode.BetterAiPrompt and not ProcessingMode.Assistant;
 
     public OverlayViewModel(DictationCoordinator coordinator, ISettingsService settings)
     {

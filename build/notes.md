@@ -1,23 +1,23 @@
-## Live Transcribe 1.2.0
+## Live Transcribe 1.3.0
 
-Lokale Sprachdiktier-App mit optionaler OpenAI-Textoptimierung.
+Lokale Sprachdiktier-App mit OpenAI-Unterstützung.
 
 **Neu in dieser Version**
-- **Automatisches Einfügen wie am Handy**: Cursor in einem Textfeld → Text wird direkt dort
-  eingefügt; kein Feld aktiv → Text landet in der Zwischenablage. Kein „Nach Aufnahme"-Schalter mehr.
-- **KI-Überarbeitung übernimmt Formatierung** (Absätze, Zeilenumbrüche, Aufzählungen).
+- **Assistent-Modus (neuer Standard)**: Sprich eine Anweisung wie „Schreibe eine Mail an Herrn
+  Büttner, dass die Teile später kommen" — OpenAI führt sie aus und gibt **nur das Ergebnis**
+  (die fertige Mail) zurück, das direkt eingefügt/kopiert wird. Normaler Text wird verbessert.
+  Die bisherigen Modi bleiben im Overlay wählbar.
+- **OpenAI-Status sichtbar**: Das Overlay zeigt nach dem Diktat „mit OpenAI" bzw. den Grund,
+  falls nicht überarbeitet wurde (z. B. „OpenAI-Kontingent erschöpft – Rohtext").
 
-**Behoben**
-- Unlesbare Dropdowns (helle Schrift auf hellem Aufklapp-Hintergrund) — jetzt dunkles, lesbares Popup.
-- Diktat bricht nicht mehr ab, wenn die Zwischenablage kurzzeitig gesperrt ist
-  (Tipp-Fallback statt Fehler).
+**Aus 1.2.x**
+- Automatisches Einfügen ins fokussierte Textfeld (sonst Zwischenablage).
+- Lesbare dunkle Dropdowns; abgehärtete Zwischenablage.
+- Live-Vorschau während der Aufnahme, freie Hotkeys, modernes Overlay.
 
-**Aus 1.1.x**
-- Live-Vorschau des gesprochenen Texts während der Aufnahme (schnelles Tiny-Modell).
-- Frei belegbare Aufnahme-Tastenkürzel, kompaktes modernes Overlay, Modell-Vorwärmen beim Start.
+> Hinweis: Für die OpenAI-Überarbeitung wird ein gültiger OpenAI-Key **mit Guthaben** benötigt
+> (Einstellungen → API-Key). Ohne Guthaben meldet OpenAI „Kontingent erschöpft" und es wird der
+> Rohtext eingefügt.
 
-Die vollständigen Änderungen dieser Version stehen in der [CHANGELOG.md](../CHANGELOG.md).
-
-> Hinweis: Beim ersten Start kann Windows SmartScreen eine Warnung anzeigen,
-> da das Installationsprogramm (noch) nicht signiert ist.
-> „Weitere Informationen" → „Trotzdem ausführen".
+> Hinweis: Beim ersten Start kann Windows SmartScreen eine Warnung anzeigen, da das
+> Installationsprogramm (noch) nicht signiert ist. „Weitere Informationen" → „Trotzdem ausführen".

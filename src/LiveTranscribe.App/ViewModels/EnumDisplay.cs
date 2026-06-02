@@ -13,6 +13,7 @@ public static class EnumDisplay
 {
     public static string Describe(ProcessingMode mode) => mode switch
     {
+        ProcessingMode.Assistant => "Assistent (versteht Anweisungen)",
         ProcessingMode.TranscribeOnly => "Nur transkribieren",
         ProcessingMode.FixSpellingGrammar => "Rechtschreibung & Grammatik",
         ProcessingMode.ComposeEmail => "E-Mail verfassen",

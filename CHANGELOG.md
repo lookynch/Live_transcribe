@@ -6,6 +6,20 @@ Versionierung nach [SemVer](https://semver.org/lang/de/).
 
 ## [Unveröffentlicht]
 
+## [1.3.0] — 2026-06-01
+
+### Hinzugefügt
+- **Assistent-Modus (neuer Standard)**: Das Diktat wird interpretiert. Ist es eine Anweisung
+  (z. B. „Schreibe eine Mail an Herrn Büttner, dass die Teile später kommen"), führt OpenAI sie
+  aus und gibt **nur das fertige Ergebnis** (die Mail) zurück — genau das wird eingefügt/kopiert.
+  Ist es normaler Text, wird er verbessert. Die bisherigen Modi bleiben wählbar.
+
+### Geändert
+- **OpenAI-Status sichtbar**: Nach jedem Diktat zeigt das Overlay, ob OpenAI tatsächlich
+  überarbeitet hat („mit OpenAI") oder warum nicht („OpenAI-Kontingent erschöpft – Rohtext",
+  „OpenAI-Key ungültig – Rohtext"). Vorher fiel die App bei OpenAI-Fehlern still auf den Rohtext
+  zurück, ohne das anzuzeigen.
+
 ## [1.2.0] — 2026-06-01
 
 ### Hinzugefügt
@@ -69,7 +83,8 @@ Versionierung nach [SemVer](https://semver.org/lang/de/).
 - Saubere Deinstallation inkl. Autostart-, Temp- und optionaler Nutzerdaten-Bereinigung.
 - GitHub-Actions-Release-Workflow (Tag `v*` → Build, Test, Pack, Upload).
 
-[Unveröffentlicht]: ../../compare/v1.2.0...HEAD
+[Unveröffentlicht]: ../../compare/v1.3.0...HEAD
+[1.3.0]: ../../compare/v1.2.0...v1.3.0
 [1.2.0]: ../../compare/v1.1.1...v1.2.0
 [1.1.1]: ../../compare/v1.1.0...v1.1.1
 [1.1.0]: ../../compare/v1.0.0...v1.1.0

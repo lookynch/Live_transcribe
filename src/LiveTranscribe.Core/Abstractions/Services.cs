@@ -60,7 +60,7 @@ public interface IWhisperModelService
 /// <summary>Optional OpenAI rework of the transcribed TEXT (never audio).</summary>
 public interface IOpenAiTextOptimizationService
 {
-    Task<string> OptimizeAsync(string text, ProcessingMode mode, Tone tone, string? customInstruction, CancellationToken ct = default);
+    Task<OptimizationResult> OptimizeAsync(string text, ProcessingMode mode, Tone tone, string? customInstruction, CancellationToken ct = default);
 }
 
 /// <summary>Inserts text into the previously active window.</summary>

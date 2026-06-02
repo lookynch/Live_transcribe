@@ -3,6 +3,11 @@ namespace LiveTranscribe.Core.Models;
 /// <summary>How the recognized text is processed before it is inserted.</summary>
 public enum ProcessingMode
 {
+    /// <summary>
+    /// Smart default: treats the dictation as either an instruction to fulfil (returning only the
+    /// result, e.g. a finished email) or as text to improve. Uses OpenAI.
+    /// </summary>
+    Assistant,
     TranscribeOnly,
     FixSpellingGrammar,
     ComposeEmail,
